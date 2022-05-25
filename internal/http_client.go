@@ -21,9 +21,11 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"math"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"google.golang.org/api/option"
@@ -263,6 +265,8 @@ func (r *Request) buildHTTPRequest(opts []HTTPOption) (*http.Request, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		log.Println("FCM FORK - HTTPClient.buildHTTPRequest", strings.Replace(string(b), "\n", "", -1))
 		data = bytes.NewBuffer(b)
 		opts = append(opts, WithHeader("Content-Type", r.Body.Mime()))
 	}

@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"math"
 	"net/http"
 	"strconv"
@@ -179,6 +180,7 @@ func (c *HTTPClient) attempt(ctx context.Context, hr *http.Request, retries int)
 	resp, err := c.Client.Do(hr.WithContext(ctx))
 	result := &attemptResult{}
 	if err != nil {
+		log.Println("FCM FORK: client do error:", err)
 		result.Err = err
 	} else {
 		// Read the response body here forcing any I/O errors to occur so that retry logic will
@@ -261,6 +263,7 @@ func (r *Request) buildHTTPRequest(opts []HTTPOption) (*http.Request, error) {
 	if r.Body != nil {
 		b, err := r.Body.Bytes()
 		if err != nil {
+			log.Println("FCM FORK: error while serializing request body:", err)
 			return nil, err
 		}
 		data = bytes.NewBuffer(b)

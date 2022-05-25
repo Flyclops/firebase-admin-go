@@ -28,6 +28,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
+	"strings"
 
 	"firebase.google.com/go/v4/internal"
 )
@@ -282,14 +283,15 @@ func newSendResponse(part *multipart.Part) (*SendResponse, error) {
 
 	b, err := ioutil.ReadAll(hr.Body)
 	if err != nil {
+		log.Println("FCM FORK -- error reading response body:", err)
 		return nil, err
 	}
 
-	log.Println("FCM FORK -- Body:", string(b))
-	log.Println("FCM FORK -- Status", hr.Status)
-	log.Println("FCM FORK -- StatusCode ", hr.StatusCode)
-
 	if hr.StatusCode != http.StatusOK {
+		log.Println("FCM FORK -- Body:", strings.Replace(string(b), "\n", "", -1))
+		log.Println("FCM FORK -- Status", hr.Status)
+		log.Println("FCM FORK -- StatusCode ", hr.StatusCode)
+
 		resp := &internal.Response{
 			Status: hr.StatusCode,
 			Header: hr.Header,

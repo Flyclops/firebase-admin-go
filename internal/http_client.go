@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"math"
 	"net/http"
 	"strconv"
@@ -144,12 +143,10 @@ func (c *HTTPClient) Do(ctx context.Context, req *Request) (*Response, error) {
 
 		result = c.attempt(ctx, hr, retries)
 		if !result.Retry {
-			log.Println("FCM FORK: no retry:", result)
 			break
 		}
 
 		if err = result.waitForRetry(ctx); err != nil {
-			log.Println("FCM FORK: Error waiting for retry:", err)
 			return nil, err
 		}
 	}
@@ -182,7 +179,6 @@ func (c *HTTPClient) attempt(ctx context.Context, hr *http.Request, retries int)
 	resp, err := c.Client.Do(hr.WithContext(ctx))
 	result := &attemptResult{}
 	if err != nil {
-		log.Println("FCM FORK: client do error:", err)
 		result.Err = err
 	} else {
 		// Read the response body here forcing any I/O errors to occur so that retry logic will
@@ -196,12 +192,9 @@ func (c *HTTPClient) attempt(ctx context.Context, hr *http.Request, retries int)
 	// or not. Even if there was a network error, we may not want to retry the request based on the
 	// RetryConfig that is in effect.
 	if c.RetryConfig != nil {
-		log.Println("FCM FORK RetryConfig provided")
 		delay, retry := c.RetryConfig.retryDelay(retries, resp, result.Err)
 		result.RetryAfter = delay
 		result.Retry = retry
-	} else {
-		log.Println("FCM FORK No RetryConfig provided")
 	}
 
 	return result
@@ -209,12 +202,10 @@ func (c *HTTPClient) attempt(ctx context.Context, hr *http.Request, retries int)
 
 func (c *HTTPClient) handleResult(req *Request, result *attemptResult) (*Response, error) {
 	if result.Err != nil {
-		log.Println("FCM FORK: handleResult:", result.Err)
 		return nil, newFirebaseErrorTransport(result.Err)
 	}
 
 	if !c.success(req, result.Resp) {
-		log.Println("FCM FORK: handleResult !c.success(req, result.Resp):", result.Resp.Status)
 		return nil, c.newError(req, result.Resp)
 	}
 
@@ -245,7 +236,6 @@ func (c *HTTPClient) newError(req *Request, resp *Response) error {
 		createErr = c.CreateErrFn
 	}
 
-	log.Println("FCM FORK: newError:")
 	return createErr(resp)
 }
 
@@ -271,7 +261,6 @@ func (r *Request) buildHTTPRequest(opts []HTTPOption) (*http.Request, error) {
 	if r.Body != nil {
 		b, err := r.Body.Bytes()
 		if err != nil {
-			log.Println("FCM FORK: error while serializing request body:", err)
 			return nil, err
 		}
 		data = bytes.NewBuffer(b)
@@ -280,7 +269,6 @@ func (r *Request) buildHTTPRequest(opts []HTTPOption) (*http.Request, error) {
 
 	req, err := http.NewRequest(r.Method, r.URL, data)
 	if err != nil {
-		log.Println("FCM FORK: error while creating request:", err)
 		return nil, err
 	}
 

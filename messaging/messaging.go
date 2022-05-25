@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -1062,15 +1061,10 @@ type fcmErrorResponse struct {
 func handleFCMError(resp *internal.Response) error {
 	base := internal.NewFirebaseErrorOnePlatform(resp)
 	var fe fcmErrorResponse
-	err := json.Unmarshal(resp.Body, &fe) // ignore any json parse errors at this level
-	if err != nil {
-		log.Println("FCM FORK: error parsing FCM error response:", err)
-	}
+	json.Unmarshal(resp.Body, &fe) // ignore any json parse errors at this level
 
 	// Debug more errors
-	log.Println("FCM FORK: error response:", fe)
 	for _, d := range fe.Error.Details {
-		log.Println("FCM FORK: error details:", d)
 		if d.Type == "type.googleapis.com/google.firebase.fcm.v1.FcmError" {
 			base.Ext["messagingErrorCode"] = d.ErrorCode
 			break
@@ -1086,9 +1080,6 @@ func hasMessagingErrorCode(err error, code string) bool {
 		return false
 	}
 
-	log.Println("FCM FORK: error:", fe.String)
-	log.Println("FCM FORK: error code:", fe.ErrorCode)
-	log.Printf("FCM FORK error ext: %+v", fe.Ext["messagingErrorCode"])
 	got, ok := fe.Ext["messagingErrorCode"]
 	return ok && got == code
 }

@@ -144,10 +144,12 @@ func (c *HTTPClient) Do(ctx context.Context, req *Request) (*Response, error) {
 
 		result = c.attempt(ctx, hr, retries)
 		if !result.Retry {
+			log.Println("FCM FORK: no retry:", result)
 			break
 		}
 
 		if err = result.waitForRetry(ctx); err != nil {
+			log.Println("FCM FORK: Error waiting for retry:", err)
 			return nil, err
 		}
 	}
@@ -243,6 +245,7 @@ func (c *HTTPClient) newError(req *Request, resp *Response) error {
 		createErr = c.CreateErrFn
 	}
 
+	log.Println("FCM FORK: newError:", createErr(resp))
 	return createErr(resp)
 }
 

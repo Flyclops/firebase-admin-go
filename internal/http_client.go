@@ -194,9 +194,12 @@ func (c *HTTPClient) attempt(ctx context.Context, hr *http.Request, retries int)
 	// or not. Even if there was a network error, we may not want to retry the request based on the
 	// RetryConfig that is in effect.
 	if c.RetryConfig != nil {
+		log.Println("FCM FORK RetryConfig provided")
 		delay, retry := c.RetryConfig.retryDelay(retries, resp, result.Err)
 		result.RetryAfter = delay
 		result.Retry = retry
+	} else {
+		log.Println("FCM FORK No RetryConfig provided")
 	}
 
 	return result

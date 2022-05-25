@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"mime"
 	"mime/multipart"
 	"net/http"
@@ -177,10 +178,12 @@ func (c *fcmClient) sendBatch(
 
 	resp, err := c.httpClient.Do(ctx, request)
 	if err != nil {
+		log.Println("FCM Fork: c.httpClient.Do error:", err)
 		return nil, err
 	}
 
 	if resp.Status != http.StatusOK {
+		log.Println("FCM Fork: resp.Status != http.StatusOK", resp.Status)
 		return nil, handleFCMError(resp)
 	}
 

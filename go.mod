@@ -1,13 +1,10 @@
-module github.com/Flyclops/firebase-admin-go/v4
-
-replace firebase.google.com/go/v4 => ./
+module firebase.google.com/go/v4
 
 go 1.11
 
 require (
 	cloud.google.com/go/firestore v1.5.0
 	cloud.google.com/go/storage v1.10.0
-	firebase.google.com/go/v4 v4.0.0-00010101000000-000000000000
 	golang.org/x/oauth2 v0.0.0-20210218202405-ba52d332ba99
 	google.golang.org/api v0.40.0
 	google.golang.org/appengine v1.6.7

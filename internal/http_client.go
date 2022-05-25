@@ -207,10 +207,12 @@ func (c *HTTPClient) attempt(ctx context.Context, hr *http.Request, retries int)
 
 func (c *HTTPClient) handleResult(req *Request, result *attemptResult) (*Response, error) {
 	if result.Err != nil {
+		log.Println("FCM FORK: handleResult:", result.Err)
 		return nil, newFirebaseErrorTransport(result.Err)
 	}
 
 	if !c.success(req, result.Resp) {
+		log.Println("FCM FORK: handleResult !c.success(req, result.Resp):", result.Resp.Status)
 		return nil, c.newError(req, result.Resp)
 	}
 
@@ -275,6 +277,7 @@ func (r *Request) buildHTTPRequest(opts []HTTPOption) (*http.Request, error) {
 
 	req, err := http.NewRequest(r.Method, r.URL, data)
 	if err != nil {
+		log.Println("FCM FORK: error while creating request:", err)
 		return nil, err
 	}
 

@@ -245,7 +245,7 @@ func (c *HTTPClient) newError(req *Request, resp *Response) error {
 		createErr = c.CreateErrFn
 	}
 
-	log.Println("FCM FORK: newError:", createErr(resp))
+	log.Println("FCM FORK: newError:")
 	return createErr(resp)
 }
 
